@@ -1,0 +1,108 @@
+﻿@model IEnumerable<PilotLog.NET.Models.Log> 
+
+@{
+    ViewBag.Title = "Log";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+  .filterstyle .ui-selecting { background: #FECA40; }
+  .filterstyle .ui-selected { background: #F39814; color: white; }
+  .filterstyle { list-style-type: none; margin: 0; padding: 0; width: 80%; }
+  .filterstyle li {color: #c8c8c8;background-color: #CC0000;margin: 1px; padding: 0.4em; font-size: 1.1em; height: 18px;border: 1px solid black;border-radius: 3px;-webkit-border-radius: 3px;-moz-border-radius: 3px;}
+  #filtercontainer{-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;border:1px solid #CC0000;padding:10px;}
+</style>
+<script>
+    var dateSortedDesc = true;
+    var selectedCallsign = "Alle";
+    var selectedIcao = "Alle";
+
+    $(document).ready(function() {
+        $("#filterCallsign").selectable({
+            selected: function (event, ui) {
+                selectedCallsign = ui.selected.innerHTML;
+                $.ajax({
+                    url: "/pilotlog/Home/LogFilter?callsign=" + selectedCallsign+"&icao="+selectedIcao,
+                    context: document.body
+                }).done(function (data) {
+                    $("#logliste").html(data);
+                });
+            }
+        });
+        
+        $.ajax({
+            url: "/pilotlog/Home/GetICAOList",
+            context: document.body
+        }).done(function (data) {
+            $.each(data, function(id,code) {
+                $("#filterIcao").append("<li class='ui-widget-content'>" + code + "</li>");
+            });
+            $("#filterIcao").selectable({
+                selected:function (event,ui) {
+                    selectedIcao = ui.selected.innerHTML;
+                    $.ajax({
+                        url: "/pilotlog/Home/LogFilter?callsign="+selectedCallsign+"&icao=" + selectedIcao,
+                        context: document.body
+                    }).done(function (data) {
+                        $("#logliste").html(data);
+                    });
+                }
+            });
+        });
+
+        $("#showhidefilter").on("click", function () {
+            $("#filtercontainer").toggle("slow");
+            $("#showFilter").toggle();
+            $("#hideFilter").toggle();
+        });
+
+        $("#logliste").live("click", function (event) {
+            dateSortedDesc = !dateSortedDesc;
+            console.log(dateSortedDesc);
+            $.ajax({
+                url: "/pilotlog/Home/LogSortDate?asc=" + dateSortedDesc,
+                context: document.body
+            }).done(function (data) {
+                $("#logliste").html(data);
+            }).fail(function (e) {
+                console.log("fail" + e);
+            });
+        });
+    });    
+
+</script>
+
+<div id="showhidefilter">
+    <div id="showFilter" style="display: none;font-size:12pt;color:blue;cursor: pointer">Vis filter</div>
+    <div id="hideFilter" style="display: inline-block;font-size:12pt;color:blue;cursor: pointer">Skjul filter</div>
+</div>
+<div id="filtercontainer" style="">
+    <div style="display:inline-block;float:left">
+        <h3>Filtrer fly</h3>
+        <div style="width:100px;cursor:pointer">
+            <ol id="filterCallsign" class="filterstyle">
+                <li class="ui-widget-content ui-selected">Alle</li>
+                <li class="ui-widget-content">LN-BTS</li>
+                <li class="ui-widget-content">LN-BGQ</li>
+                <li class="ui-widget-content">LN-SVO</li>
+            </ol>
+        </div>
+    </div>
+
+    <div style="display: inline-block">
+        <h3>Filtrer plass</h3>
+        <div style="width:100px;cursor:pointer">
+            <ol id="filterIcao" class="filterstyle">
+                <li class="ui-widget-content ui-selected">Alle</li>   
+            </ol>
+        </div>
+    </div>
+</div>
+
+
+@Html.Partial("Loglist")
+
+<div>
+    
+</div>

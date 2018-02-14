@@ -1,0 +1,39 @@
+﻿<div id="logliste">
+<h2>Log 
+    (@Html.Raw(ViewBag.logItemsCount) turer)
+    
+</h2>
+
+    <div class="box" style="background-color: #CC0000;color:#c8c8c8;font-weight: bold">
+        <div id="sortdate" class="cell big" style="color:blue;text-decoration: underline;cursor: pointer">Dato</div>
+        <div class="cell big" style="">Id</div>
+        <div class="cell big" style="">Modell</div>
+        <div class="cell small" style="">Fra</div>
+        <div class="cell small" style="">Til</div>
+        <div class="cell big" style="">Landinger</div>
+        <div class="cell small" style="">PIC</div>
+        <div class="cell small" style="">Dual</div>
+        <div class="cell big" style="">Takeoff-tid</div>
+        <div class="cell big" style="">Landingstid</div>
+        <div class="cell" style="">Kommentar</div> 
+    </div>
+
+    @{var odd = true;}
+    @foreach (var item in Model)
+    {
+        <div class="@(odd?"box gradientLightOrange":"box gradientDarkOrange")">
+            <div class="cell big" style="width:80px;">@item.date.ToString("dd.MM.yyyy")</div>
+            <div class="cell big" style="">@item.aircraft_callsign</div>
+            <div class="cell big" style="">@item.aircraft_model</div>
+            <div class="cell small" style="">@item.dep_airport</div>
+            <div class="cell small" style="">@item.arr_airport</div>
+            <div class="cell big" style="text-align: center">@item.landings</div>
+            <div class="cell small" style="">@item.pic_duration.ToString("HH:mm")</div>
+            <div class="cell small" style="">@item.dual_duration.ToString("HH:mm")</div>
+            <div class="cell big" style="text-align: center">@item.takeofftime.ToString("HH:mm")</div>
+            <div class="cell big" style="text-align: center">@item.landingtime.ToString("HH:mm")</div>
+            <div class="cell" style="">@item.comments</div>
+        </div>
+        odd = !odd;
+    } 
+</div>
